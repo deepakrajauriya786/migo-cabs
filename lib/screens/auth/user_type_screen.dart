@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../customer/customer_home_screen.dart';
 import '../vendor/bottom_navigator_vendor.dart';
@@ -24,11 +25,8 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 35),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CustomerHomeScreen(),
-                        ));
+                    Get.off(() => const CustomerHomeScreen());
+
                     // Add navigation or action here
                   },
                   style: ElevatedButton.styleFrom(
@@ -55,11 +53,7 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 35),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BottomNavigatorVendor(),
-                        ));
+                    Get.off(() => const BottomNavigatorVendor());
                     // Add navigation or action here
                   },
                   style: ElevatedButton.styleFrom(

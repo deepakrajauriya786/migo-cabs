@@ -1,9 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
 import 'package:migo_cabs/screens/auth/user_type_screen.dart';
 import 'package:migo_cabs/screens/widgets/snackbar_toast.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpInputScreen extends StatefulWidget {
+  final String mobile;
+  final String otpSend;
+
+  const OtpInputScreen(this.mobile, this.otpSend, {super.key});
+
   @override
   _OTPInputScreenState createState() => _OTPInputScreenState();
 }
@@ -11,12 +21,14 @@ class OtpInputScreen extends StatefulWidget {
 class _OTPInputScreenState extends State<OtpInputScreen> {
   final TextEditingController _otpController = TextEditingController();
   final FocusNode _focusNode =
-      FocusNode(); // FocusNode for the hidden TextField
+  FocusNode(); // FocusNode for the hidden TextField
   String otp = "";
+  String userId="";
 
   @override
   void initState() {
     super.initState();
+
     // Automatically request focus on the TextField when the screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
@@ -28,6 +40,55 @@ class _OTPInputScreenState extends State<OtpInputScreen> {
     _focusNode.dispose(); // Dispose the FocusNode to avoid memory leaks
     _otpController.dispose();
     super.dispose();
+  }
+
+  Future<String> loginAccount(Map<String, dynamic> data) async {
+    try {
+      var response = await http.post(
+        Uri.parse(AppSizes.BASEURL + "registration.php"),
+        body: jsonEncode(data),
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      );
+      if (response.statusCode == 200) {
+        print("data ${data['mobile']}");
+        var jsondata = jsonDecode(response.body.toString());
+
+        if (jsondata[0]['message']=="1") {
+          addStringToPref(jsondata[0]['u_id'].toString(),data['mobile'].toString());
+
+          return "success";
+        } else {
+          return "Failed";
+        }
+        return "Failed";
+      } else {
+        // server error
+        print("Server Error !");
+        return Future.error("Server Error !");
+      }
+    } catch (SocketException) {
+      // fetching error
+      print("Error Fetching Data !");
+      return Future.error("Error Fetching Data !");
+    }
+  }
+
+  Future<void> addStringToPref(String u_id,String mobile) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('u_id', u_id);
+    prefs.setString('mobile', mobile);
+    setState(() {});
+    user();
+  }
+
+  void user() async {
+    userId = await AppSizes.uid;
+    setState(() {
+      print("User ID: $userId");
+    });
+
   }
 
   void _onDashTapped() {
@@ -55,10 +116,11 @@ class _OTPInputScreenState extends State<OtpInputScreen> {
               ),
               // Logo
               Image.asset(
-                'assets/images/migosplash.jpg', // Replace with the correct asset path
+                'assets/images/migosplash.jpg',
+                // Replace with the correct asset path
                 height: 150,
                 width: 150,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
               ),
               SizedBox(height: 15),
 
@@ -111,7 +173,8 @@ class _OTPInputScreenState extends State<OtpInputScreen> {
               // Hidden Text Field with FocusNode
               TextField(
                 controller: _otpController,
-                focusNode: _focusNode, // Attach the FocusNode
+                focusNode: _focusNode,
+                // Attach the FocusNode
                 keyboardType: TextInputType.number,
                 maxLength: 4,
                 style: TextStyle(
@@ -132,16 +195,28 @@ class _OTPInputScreenState extends State<OtpInputScreen> {
 
               // Continue Button
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  print("OTP Submitted: ${widget.otpSend}");
                   if (otp.length == 4) {
                     // Add OTP submission logic here
-                    print("OTP Submitted: $otp");
-                    toast("Login Successfully", context, color: Colors.green);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserTypeScreen(),
-                        ));
+                    if (otp == widget.otpSend) {
+                      Map<String, dynamic> data = {'mobile': widget.mobile};
+                      String response = await loginAccount(data);
+
+                      if (response == "success") {
+                        toast(
+                            "Login Successfully", context,
+                            color: Colors.green);
+                        Get.off(() =>  const UserTypeScreen());
+
+                      } else {
+                        toast("Failed ! Please try again...", context,
+                            color: Colors.red);
+                      }
+                    } else {
+                      toast("Please Enter Valid OTP", context,
+                          color: Colors.red);
+                    }
                   } else {
                     toast("Please Enter Valid OTP", context, color: Colors.red);
                   }

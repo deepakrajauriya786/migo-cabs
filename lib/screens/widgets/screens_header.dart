@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
 
 class ScreensHeader extends StatelessWidget {
@@ -55,7 +56,7 @@ class ScreensHeader extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 6),
                       child: InkWell(
                         onTap: () {
-                          Navigator.pop(context);
+                         Get.back();
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),

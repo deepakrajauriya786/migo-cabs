@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../const/app_sizes.dart';
+import 'auth/user_type_screen.dart';
 import 'auth/welcome_screen.dart';
+import 'customer/customer_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,10 +14,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+
+
+
   void navigatescreen() {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => MyWidget(),
-    ));
+    Get.off(() => MyWidget());
   }
 
   // Future<void> routes() async {
@@ -29,12 +35,25 @@ class _SplashScreenState extends State<SplashScreen> {
   //   }
   // }
 
+  void userCheck() async {
+   String userId = await AppSizes.uid;
+   print(userId);
+    if(userId.isEmpty){
+      navigatescreen();
+    }else{
+      Get.off(() => const UserTypeScreen());
+
+    }
+
+
+  }
+
   @override
   void initState() {
     // TODO: implement initState
 
     Future.delayed(const Duration(seconds: 3), () {
-      navigatescreen();
+      userCheck();
     });
     super.initState();
   }

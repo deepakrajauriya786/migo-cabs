@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
 import 'package:migo_cabs/screens/customer/customer_bottom_screens/customer_history_screen.dart';
 import 'package:migo_cabs/screens/customer/customer_profile_update.dart';
@@ -21,7 +22,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     AppSizes().initSizes(context);
-    return Scaffold(
+    return  WillPopScope(
+      onWillPop: () => showExitPopup(context),
+      child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -97,7 +100,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GridView.count(
+              child:
+              GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
@@ -109,42 +113,26 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       icon: Icons.map,
                       label: "Outstation\nOne Way",
                       callback: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OneWayScreen(),
-                            ));
+                        Get.to(() =>  OneWayScreen());
                       }),
                   _buildServiceCard(
                       icon: Icons.location_on,
                       label: "Outstation\nRound Trip",
                       callback: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RoundTripScreen(),
-                            ));
+                        Get.to(() =>  RoundTripScreen());
                       }),
                   _buildServiceCard(
                     icon: Icons.access_time,
                     label: "Hourly\nRentals",
                     callback: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HourlyRentalsScreen(),
-                          ));
+                      Get.to(() =>  HourlyRentalsScreen());
                     },
                   ),
                   _buildServiceCard(
                       icon: Icons.airplanemode_active,
                       label: "Airport\nTransfers",
                       callback: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AirportTransfersScreen(),
-                            ));
+                        Get.to(() =>  AirportTransfersScreen());
                       }),
                 ],
               ),
@@ -242,7 +230,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         ),
       ),
       drawer: const MyNavigationDrawer(),
-    );
+    ),);
   }
 
   Widget _buildServiceCard(

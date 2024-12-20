@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../splash_screen.dart';
+import '../customer_bottom_screens/customer_history_screen.dart';
+import '../customer_bottom_screens/customer_notification_history.dart';
+import '../customer_home_screen.dart';
 import '../customer_profile_update.dart';
+import '../wallet_screan/help_us.dart';
+import '../wallet_screan/wallet_screan.dart';
 
 class MyNavigationDrawer extends StatelessWidget {
   const MyNavigationDrawer({super.key});
@@ -19,23 +29,52 @@ class MyNavigationDrawer extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _buildListTile(Icons.verified_user, 'Verify Yourself', () {}),
-                _buildListTile(Icons.payment, 'Payment Details', () {}),
-                _buildListTile(Icons.history, 'History', () {}),
-                _buildListTile(Icons.settings, 'Settings', () {}),
-                _buildListTile(Icons.local_offer, 'Offers', () {}),
-                _buildListTile(Icons.help, 'Help', () {}),
-                _buildListTile(Icons.notifications, 'Notification', () {}),
-                _buildListTile(Icons.share, 'Share App', () {}),
-                _buildListTile(Icons.star, 'Rate App', () {}),
+                _buildListTile(Icons.verified_user, 'Home', () {
+                  Get.off(const CustomerHomeScreen());
+                }),
+                _buildListTile(Icons.payment, 'Wallet Details', () {
+                  Get.to(() => const CustomerWalletHistory());
+                }),
+                _buildListTile(Icons.history, 'Booking History', () {
+                  Get.to(() => const CustomerHistoryScreen());
+                }),
+                _buildListTile(Icons.settings, 'Settings', () {
+                  Get.to(() => const CustomerProfileUpdate());
+                }),
+                _buildListTile(Icons.help, 'Help', () {
+                  Get.to(() => const CustomerHelpUp());
+                }),
+                _buildListTile(Icons.notifications, 'Notification', () {
+                  Get.to(const CustomerNotificationHistory());}),
+                _buildListTile(Icons.share, 'Share App', () {
+                  Share.share('Install my App: https://play.google.com/store/apps/details?id=');
+                }),
+                _buildListTile(Icons.star, 'Rate App', () async {
+                  launchURI();
+                }),
                 const Divider(),
-                _buildListTile(Icons.logout, 'Logout', () {}, isLogout: true),
+                _buildListTile(Icons.logout, 'Logout', () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  final success = await prefs.remove('u_id');
+                  print(success);
+                  if(success){
+                    Get.off(() => const SplashScreen());
+                  }
+
+                }, isLogout: true),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  void launchURI() async {
+    final Uri url = Uri.parse('https://play.google.com/store/apps/details?id=com.example.myapp'); // Replace with your package name
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');}
+  }
   }
 
   Widget _buildListTile(IconData icon, String title, VoidCallback onTap,
@@ -142,5 +181,5 @@ class MyNavigationDrawer extends StatelessWidget {
         ],
       ),
     );
-  }
+
 }

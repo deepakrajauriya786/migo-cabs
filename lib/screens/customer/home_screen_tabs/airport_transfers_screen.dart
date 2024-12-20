@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../google_search_location/search_location.dart';
 import '../../widgets/screens_header.dart';
+import '../customer_home_screen.dart';
 
 class AirportTransfersScreen extends StatefulWidget {
-  const AirportTransfersScreen({super.key});
+  final String dropAddress;
+  final String pickupAddress;
+  final String type;
+
+  const AirportTransfersScreen({
+    this.dropAddress = '',
+    this.pickupAddress = '',
+    this.type = '0',
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AirportTransfersScreen> createState() => _AirportTransfersScreenState();
@@ -12,9 +24,19 @@ class AirportTransfersScreen extends StatefulWidget {
 class _AirportTransfersScreenState extends State<AirportTransfersScreen> {
   TextEditingController _pickupdatecontroller = TextEditingController();
   TextEditingController _pickuptimecontroller = TextEditingController();
-  TextEditingController _locationcontroller = TextEditingController();
-  TextEditingController _airportcontroller = TextEditingController();
 
+  TextEditingController _pickupcontroller = TextEditingController();
+  TextEditingController _dropcontroller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pickupcontroller.text =widget.pickupAddress;
+    _dropcontroller.text =widget.dropAddress;
+
+
+  }
   Future<DateTime?> pickFutureDate(BuildContext context) async {
     final DateTime today = DateTime.now();
     final DateTime? pickedDate = await showDatePicker(
@@ -72,180 +94,201 @@ class _AirportTransfersScreenState extends State<AirportTransfersScreen> {
   bool isFromAirportSelected = true;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          ScreensHeader(title: "Airport Transfers"),
-          SizedBox(
-            height: 20,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  "Create New Booking",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontFamily: 'roboto',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        Get.off(const CustomerHomeScreen()); // Navigate to CustomerHomeScreen
+        return true; // Prevent default back press behavior
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            ScreensHeader(title: "Airport Transfers"),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Create New Booking",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isFromAirportSelected = true;
-                          });
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: isFromAirportSelected
-                                ? Colors.orange
-                                : Colors.grey[200],
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              bottomLeft: Radius.circular(8),
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "from Airport",
-                            style: TextStyle(
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isFromAirportSelected = true;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
                               color: isFromAirportSelected
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontWeight: FontWeight.bold,
+                                  ? Colors.orange
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "from Airport",
+                              style: TextStyle(
+                                color: isFromAirportSelected
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isFromAirportSelected = false;
-                          });
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: isFromAirportSelected
-                                ? Colors.grey[200]
-                                : Colors.orange,
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(8),
-                              bottomRight: Radius.circular(8),
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "to Airport",
-                            style: TextStyle(
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isFromAirportSelected = false;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
                               color: isFromAirportSelected
-                                  ? Colors.black
-                                  : Colors.white,
-                              fontWeight: FontWeight.bold,
+                                  ? Colors.grey[200]
+                                  : Colors.orange,
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "to Airport",
+                              style: TextStyle(
+                                color: isFromAirportSelected
+                                    ? Colors.black
+                                    : Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                _buildTextField(
-                    controller: _airportcontroller,
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  _buildTextField(
+                    controller: _pickupcontroller,
                     label: 'Airport',
                     icon: Icons.location_on,
-                    callback: () {}),
-                SizedBox(height: 16),
-                _buildTextField(
-                    controller: _locationcontroller,
+                    isenable: false,
+                    callback: ()  {
+                      Get.to(
+                        GoogleMapSearchPlacesApi(_pickupcontroller.text,_dropcontroller.text,"4","1"),
+                      );
+
+                      setState(() {});
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _dropcontroller,
                     label: 'Location',
                     icon: Icons.location_on_outlined,
-                    callback: () {}),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _pickupdatecontroller,
-                        label: 'Pickup Date',
-                        icon: Icons.calendar_today,
-                        isenable: false,
-                        callback: () async {
-                          final DateTime? selectedDate =
-                              await pickFutureDate(context);
-                          if (selectedDate != null) {
-                            _pickupdatecontroller.text =
-                                "${selectedDate.toLocal()}"
-                                    .split(' ')[0]; // Format date
-                          }
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                          controller: _pickuptimecontroller,
-                          label: 'Pickup Time',
-                          icon: Icons.access_time,
+                    isenable: false,
+                    callback: ()  {
+                      Get.to(
+                        GoogleMapSearchPlacesApi(_pickupcontroller.text,_dropcontroller.text,"4","2"),
+                      );
+                      setState(() {});
+                    },
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _pickupdatecontroller,
+                          label: 'Pickup Date',
+                          icon: Icons.calendar_today,
                           isenable: false,
                           callback: () async {
-                            final TimeOfDay? selectedTime =
-                                await pickTime(context);
-                            if (selectedTime != null) {
-                              _pickuptimecontroller.text =
-                                  selectedTime.format(context);
-                              setState(() {});
-                              // Update your text field or state with the selected time
+                            final DateTime? selectedDate =
+                            await pickFutureDate(context);
+                            if (selectedDate != null) {
+                              _pickupdatecontroller.text =
+                              "${selectedDate.toLocal()}"
+                                  .split(' ')[0]; // Format date
                             }
-                          }),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle Explore Cabs action
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: _buildTextField(
+                            controller: _pickuptimecontroller,
+                            label: 'Pickup Time',
+                            icon: Icons.access_time,
+                            isenable: false,
+                            callback: () async {
+                              final TimeOfDay? selectedTime =
+                              await pickTime(context);
+                              if (selectedTime != null) {
+                                _pickuptimecontroller.text =
+                                    selectedTime.format(context);
+                                setState(() {});
+                                // Update your text field or state with the selected time
+                              }
+                            }),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'EXPLORE CABS',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle Explore Cabs action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(
+                      'EXPLORE CABS',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ), // The widget of your current screen
     );
+
   }
 
   Widget _buildTextField(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
 import 'package:migo_cabs/screens/auth/login_screen.dart';
-
 class MyWidget extends StatefulWidget {
   @override
   _MyWidgetState createState() => _MyWidgetState();
@@ -38,7 +38,7 @@ class _MyWidgetState extends State<MyWidget>
               color: Colors.black87),
         ),
         const Text(
-          "MIGO",
+          "TAXI KING",
           style: TextStyle(
               fontFamily: "outfit",
               fontSize: 50,
@@ -70,11 +70,8 @@ class _MyWidgetState extends State<MyWidget>
           margin: EdgeInsets.symmetric(horizontal: 35),
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ));
+              Get.off(() => const LoginScreen());
+
               // Add navigation or action here
             },
             style: ElevatedButton.styleFrom(

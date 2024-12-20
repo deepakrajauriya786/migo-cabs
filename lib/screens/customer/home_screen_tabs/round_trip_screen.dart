@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/screens/widgets/screens_header.dart';
 
+import '../../google_search_location/search_location.dart';
+import '../customer_home_screen.dart';
+
 class RoundTripScreen extends StatefulWidget {
-  const RoundTripScreen({super.key});
+  final String dropAddress;
+  final String pickupAddress;
+  final String type;
+
+  const RoundTripScreen({
+    this.dropAddress = '',
+    this.pickupAddress = '',
+    this.type = '0',
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<RoundTripScreen> createState() => _RoundTripScreenState();
@@ -15,6 +28,19 @@ class _RoundTripScreenState extends State<RoundTripScreen> {
   TextEditingController _pickuptimecontroller = TextEditingController();
   TextEditingController _pickupcontroller = TextEditingController();
   TextEditingController _dropcontroller = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pickupcontroller.text =widget.pickupAddress;
+    _dropcontroller.text =widget.dropAddress;
+
+
+  }
+
+
 
   Future<DateTime?> pickFutureDate(BuildContext context) async {
     final DateTime today = DateTime.now();
@@ -72,151 +98,173 @@ class _RoundTripScreenState extends State<RoundTripScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          ScreensHeader(title: "Round Trip"),
-          SizedBox(
-            height: 20,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  "Create New Booking",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontFamily: 'roboto',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        Get.off(const CustomerHomeScreen()); // Navigate to CustomerHomeScreen
+        return true; // Prevent default back press behavior
+      },
+      child:  Scaffold(
+        body: Column(
+          children: [
+            ScreensHeader(title: "Round Trip"),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Create New Booking",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'roboto',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                _buildTextField(
+                  SizedBox(
+                    height: 15,
+                  ),
+                  _buildTextField(
                     controller: _pickupcontroller,
                     label: 'Pickup Address',
                     icon: Icons.location_on,
-                    callback: () {}),
-                SizedBox(height: 16),
-                _buildTextField(
+                    isenable: false,
+                    callback: ()  {
+                      Get.to(
+                        GoogleMapSearchPlacesApi(_pickupcontroller.text,_dropcontroller.text,"2","1"),
+                      );
+
+                      setState(() {});
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
                     controller: _dropcontroller,
                     label: 'Drop Address',
                     icon: Icons.location_on_outlined,
-                    callback: () {}),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _pickupdatecontroller,
-                        label: 'Pickup Date',
-                        icon: Icons.calendar_today,
-                        isenable: false,
-                        callback: () async {
-                          final DateTime? selectedDate =
-                              await pickFutureDate(context);
-                          if (selectedDate != null) {
-                            _pickupdatecontroller.text =
-                                "${selectedDate.toLocal()}"
-                                    .split(' ')[0]; // Format date
-                          }
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                          controller: _pickuptimecontroller,
-                          label: 'Pickup Time',
-                          icon: Icons.access_time,
+                    isenable: false,
+                    callback: ()  {
+                      Get.to(
+                        GoogleMapSearchPlacesApi(_pickupcontroller.text,_dropcontroller.text,"2","2"),
+                      );
+                      setState(() {});
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _pickupdatecontroller,
+                          label: 'Pickup Date',
+                          icon: Icons.calendar_today,
                           isenable: false,
                           callback: () async {
-                            final TimeOfDay? selectedTime =
-                                await pickTime(context);
-                            if (selectedTime != null) {
-                              _pickuptimecontroller.text =
-                                  selectedTime.format(context);
-                              setState(() {});
-                              // Update your text field or state with the selected time
+                            final DateTime? selectedDate =
+                            await pickFutureDate(context);
+                            if (selectedDate != null) {
+                              _pickupdatecontroller.text =
+                              "${selectedDate.toLocal()}"
+                                  .split(' ')[0]; // Format date
                             }
-                          }),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        controller: _dropdatecontroller,
-                        label: 'Drop Date',
-                        icon: Icons.calendar_today,
-                        isenable: false,
-                        callback: () async {
-                          final DateTime? selectedDate =
-                              await pickFutureDate(context);
-                          if (selectedDate != null) {
-                            _dropdatecontroller.text =
-                                "${selectedDate.toLocal()}"
-                                    .split(' ')[0]; // Format date
-                          }
-                          setState(() {});
-                        },
+                            setState(() {});
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                          controller: _droptimecontroller,
-                          label: 'Drop Time',
-                          icon: Icons.access_time,
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: _buildTextField(
+                            controller: _pickuptimecontroller,
+                            label: 'Pickup Time',
+                            icon: Icons.access_time,
+                            isenable: false,
+                            callback: () async {
+                              final TimeOfDay? selectedTime =
+                              await pickTime(context);
+                              if (selectedTime != null) {
+                                _pickuptimecontroller.text =
+                                    selectedTime.format(context);
+                                setState(() {});
+                                // Update your text field or state with the selected time
+                              }
+                            }),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _dropdatecontroller,
+                          label: 'Drop Date',
+                          icon: Icons.calendar_today,
                           isenable: false,
                           callback: () async {
-                            final TimeOfDay? selectedTime =
-                                await pickTime(context);
-                            if (selectedTime != null) {
-                              _droptimecontroller.text =
-                                  selectedTime.format(context);
-                              setState(() {});
-                              // Update your text field or state with the selected time
+                            final DateTime? selectedDate =
+                            await pickFutureDate(context);
+                            if (selectedDate != null) {
+                              _dropdatecontroller.text =
+                              "${selectedDate.toLocal()}"
+                                  .split(' ')[0]; // Format date
                             }
-                          }),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle Explore Cabs action
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: _buildTextField(
+                            controller: _droptimecontroller,
+                            label: 'Drop Time',
+                            icon: Icons.access_time,
+                            isenable: false,
+                            callback: () async {
+                              final TimeOfDay? selectedTime =
+                              await pickTime(context);
+                              if (selectedTime != null) {
+                                _droptimecontroller.text =
+                                    selectedTime.format(context);
+                                setState(() {});
+                                // Update your text field or state with the selected time
+                              }
+                            }),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    'EXPLORE CABS',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle Explore Cabs action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(
+                      'EXPLORE CABS',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ), // The widget of your current screen
     );
+
   }
 
   Widget _buildTextField(

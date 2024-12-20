@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:migo_cabs/screens/splash_screen.dart';
 import 'package:migo_cabs/screens/vendor/provider/vendor_bottom_navigation_provider.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       statusBarIconBrightness:
           Brightness.dark, // Adjust icon brightness for contrast
     ));
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
