@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:migo_cabs/const/app_sizes.dart';
-import 'package:migo_cabs/screens/customer/customer_bottom_screens/customer_history_screen.dart';
+import 'package:migo_cabs/screens/customer/customer_bottom_screens/customer_booking_screen.dart';
 import 'package:migo_cabs/screens/customer/customer_profile_update.dart';
 import 'package:migo_cabs/screens/customer/home_screen_tabs/airport_transfers_screen.dart';
 import 'package:migo_cabs/screens/customer/home_screen_tabs/hourly_rentals_screen.dart';
@@ -203,7 +203,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CustomerHistoryScreen(),
+                      builder: (context) => BookingPage(),
                     ));
               },
               child: Icon(

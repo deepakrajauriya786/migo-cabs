@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:migo_cabs/screens/customer/customer_bottom_screens/customer_booking_screen.dart';
 import 'package:migo_cabs/screens/widgets/screens_header.dart';
 
 import '../../auth/otp_input_screen.dart';
 import '../../google_search_location/location_distance.dart';
 import '../../google_search_location/search_location.dart';
 import '../customer_home_screen.dart';
+import '../screens/payment_option_screen.dart';
+import '../screens/select_cab_screen.dart';
 
 class OneWayScreen extends StatefulWidget {
   final String dropAddress;
@@ -199,8 +202,8 @@ class _OneWayScreenState extends State<OneWayScreen> {
                   SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
-                      Get.to(
-                        LocationDistance(_pickupcontroller.text,_dropcontroller.text,"1",_datecontroller.text,_timecontroller.text),
+                      Get.to(() =>
+                          CarSelectionPage(_pickupcontroller.text,_dropcontroller.text,"1",_datecontroller.text,_timecontroller.text),
                       );
                     },
                     style: ElevatedButton.styleFrom(
